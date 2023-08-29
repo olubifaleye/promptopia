@@ -20,6 +20,10 @@ const Nav = () => {
     //initiate providers to null
     const [providers, setProviders ] = useState(null);
 
+    //initiates toggle state to fasle
+    // (prev) => !prev sets toggle state to true in line 115
+    const [toggleDropdown, setToggleDropdown] = useState(false);
+
     //set providers with useEffect hook 
     //callback function only runs at the start
     //Used to allow signIn with google and next auth
@@ -108,8 +112,40 @@ const Nav = () => {
                         width={37}
                         height={37}
                         className="rounded-full"
-                        onClick={() => {}}
+                        onClick={() => setToggleDropdown ((prev) => !prev)}
                     />
+
+                    {/* Toggle Mobile Dropdown Navigation to show Links */}
+                    {toggleDropdown && (
+                        <div className="dropdown">
+                            <Link
+                                href="/profile"
+                                className="dropdown_link"
+                                onClick={() => setToggleDropdown(false)}
+                            >
+                                My Profile
+                            </Link>
+
+                            <Link
+                                href="/create-prompt"
+                                className="dropdown_link"
+                                onClick={() => setToggleDropdown(false)}
+                            >
+                                Create Prompt
+                            </Link>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setToggleDropdown(false);
+                                    signOut();
+                                }}
+                                className="mt-5 w-full black_btn"
+                            >
+                                Sign Out
+                            </button>  
+                        </div>
+                    )}
                 </div>
             ) : (
             <>  
