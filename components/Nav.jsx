@@ -15,7 +15,8 @@ import Provider from "./Provider";
 
 const Nav = () => {
     
-    const isUserLoggedIn = true;
+    // pull session data using useSession
+    const { data: session } = useSession();
 
     //initiate providers to null
     const [providers, setProviders ] = useState(null);
@@ -29,14 +30,14 @@ const Nav = () => {
     //Used to allow signIn with google and next auth
     useEffect(() =>{
 
-        const setProviders = async () => {
+        const setUpProviders = async () => {
             const response = await getProviders();
 
             //once response is collected, set providers to response
             setProviders(response);
         }
 
-        setProviders();
+        setUpProviders();
     },  [])
 
     return (
@@ -53,13 +54,16 @@ const Nav = () => {
             <p className="logo_text">Promptopia</p>
         </Link> 
 
+       
+
         {/* Desktop Navigation */}
         <div className="sm:flex hidden">
 
             {/* If user is logged in use ternary operator to display a div 
                 that displays create post button, signout button and profile picture */}
-                
-            { isUserLoggedIn ? (
+
+            {/* Session to check if user exists */}    
+            { session?.user ? (
                     <div className="flex gap-3 md:gap-5">
                             <Link href="/create-prompt"
                                   className="black_btn">
@@ -76,7 +80,7 @@ const Nav = () => {
 
                             <Link href="/profile">
                                 <Image
-                                    src="/assets/images/logo.svg"
+                                    src={session?.user.image}
                                     alt="Profile Picture"
                                     width={37}
                                     height={37}
@@ -104,10 +108,10 @@ const Nav = () => {
 
         {/* Mobile Navigation */}
         <div className="sm:hidden flex relative">
-            {isUserLoggedIn ? (
+            {session?.user ? (
                 <div className="flex">
                     <Image
-                        src="/assets/images/logo.svg"
+                        src={session?.user.image}
                         alt="Profile Picture"
                         width={37}
                         height={37}

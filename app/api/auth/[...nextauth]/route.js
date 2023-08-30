@@ -15,55 +15,55 @@ const handler = NextAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         })
     ],
+    callbacks: {
+                // get data about user currently in session
+        async session({ session }){
 
-    // get data about user currently in session
-    async session({ session }){
-
-        // get user by email currently used
-        const sessionUser = await User.findOne({
-            email: session.user.email
-        })
-
-        //update id to know which user is currently online
-        session.user.id = sessionUser._id.toString();
-
-        return session;
-    },
-
-    //sign in operations for new and existing users
-    async signIn({ profile }){
-
-        //try/catch block
-        //serverless -> lamba only when it gets called -> dynamodb connection
-        //stops server from running constantly
-
-        try {
-
-            await connectToDB();
-
-            //check if a user already exists by checking if they have an email address
-            const userExists = await User.findOne({
-                email: profile.email
+            // get user by email currently used
+            const sessionUser = await User.findOne({
+                email: session.user.email
             })
 
-            //if not create a new user and save to database
-            if(!userExists){
-                await User.create({
-                    email: profile.email,
-                    username: profile.name.replace(" ", "").toLowerCase(),
-                    image: profile.picture
+            //update id to know which user is currently online
+            session.user.id = sessionUser._id.toString();
+
+            return session;
+        },
+
+        //sign in operations for new and existing users
+        async signIn({ profile }){
+
+            //try/catch block
+            //serverless -> lamba only when it gets called -> dynamodb connection
+            //stops server from running constantly
+
+            try {
+
+                await connectToDB();
+
+                //check if a user already exists by checking if they have an email address
+                const userExists = await User.findOne({
+                    email: profile.email
                 })
+
+                //if not create a new user and save to database
+                if(!userExists){
+                    await User.create({
+                        email: profile.email,
+                        username: profile.name.replace(" ", "").toLowerCase(),
+                        image: profile.picture
+                    })
+                }
+
+                return true;
+                
+            } catch (error) {
+                console.log(error);
+                return false;
+                
             }
-
-            return true;
-            
-        } catch (error) {
-            console.log(error);
-            return false;
-            
         }
-    }
-
+        },
 })
 
 export { handler as GET, handler as POST };
