@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { connectToDB } from "@utils/database";
+import User from "@models/user";
 
 //Create handler to handle authentication
 const handler = NextAuth({
@@ -15,10 +16,21 @@ const handler = NextAuth({
         })
     ],
 
-    //get
-    async session({ session }){},
+    // get data about user currently in session
+    async session({ session }){
 
-    //get 
+        // get user by email currently used
+        const sessionUser = await User.findOne({
+            email: session.user.email
+        })
+
+        //update id to know which user is currently online
+        session.user.id = sessionUser._id.toString();
+
+        return session;
+    },
+
+    //sign in operations for new and existing users
     async signIn({ profile }){
 
         //try/catch block
@@ -29,10 +41,19 @@ const handler = NextAuth({
 
             await connectToDB();
 
-            //check if a user already exists
-
+            //check if a user already exists by checking if they have an email address
+            const userExists = await User.findOne({
+                email: profile.email
+            })
 
             //if not create a new user and save to database
+            if(!userExists){
+                await User.create({
+                    email: profile.email,
+                    username: profile.name.replace(" ", "").toLowerCase(),
+                    image: profile.picture
+                })
+            }
 
             return true;
             
