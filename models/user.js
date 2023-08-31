@@ -19,6 +19,7 @@ const UserSchema = new Schema({
     }
 });
 
+// get user that already exists or create a new user based on the user schema
 const User = models.User || model("User", UserSchema);
 
 export default User;
