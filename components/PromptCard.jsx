@@ -9,6 +9,15 @@ import { usePathname, useRouter } from "next/navigation";
 //set PromptCard component with props
 const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) => {
 
+  //add current session
+  const {data: session} = useSession();
+
+  //get current path name
+  const pathName = usePathname();
+
+  //get current route
+  const router = useRouter();
+
   //use State to see if a prompt is copied
   const [copied, setCopied] = useState("");
 
@@ -82,6 +91,27 @@ const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) => {
           {post.tag}
         </p>
 
+        {/* Check currently logged in user is the creator of a specific post and that
+            and if they are in the profile page
+        */}
+        {session?.user.id === post.creator._id && pathName === '/profile' && (
+            <div className="mt-5 flex-center gap-4 border-t border-gray-100 pt-3">
+              <p
+                className="font-inter text-sm green_gradient cursor-pointer"
+                onClick={handleEdit}
+              >
+                Edit
+              </p>
+
+              <p
+                className="font-inter text-sm orange_gradient cursor-pointer"
+                onClick={handleDelete}
+              >
+                Delete
+              </p>
+            </div>
+
+        )}
 
     </div>
   )
