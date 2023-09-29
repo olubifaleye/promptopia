@@ -95,7 +95,8 @@ const Feed = () => {
         
       </form>
 
-      {/* Only used in this higher order component */}
+      {/* Only used in this higher order component
+       */}
       {searchText ? (
         <PromptCardList 
             data={posts}
